@@ -28,13 +28,13 @@ function getInitials(user: UserResponse) {
 
 const navItems = [
   {
-    label: "My Applications",
-    href: "/dashboard",
+    label: "My Application",
+    href: "/borrower/dashboard",
     icon: FileText,
   },
   {
     label: "My Loans",
-    href: "/dashboard/loans",
+    href: "/borrower/loans",
     icon: Wallet,
   },
 ];
@@ -54,7 +54,7 @@ export function BorrowerNavbar({ user }: BorrowerNavbarProps) {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Left side */}
         <div className="flex min-w-0 items-center gap-8">
-          <Link href="/dashboard" className="flex items-center gap-3">
+          <Link href="/borrower/dashboard" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm">
               <Building2 className="h-5 w-5" />
             </div>
@@ -72,8 +72,8 @@ export function BorrowerNavbar({ user }: BorrowerNavbarProps) {
           <nav className="hidden items-center gap-2 md:flex">
             {navItems.map((item) => {
               const isActive =
-                item.href === "/dashboard"
-                  ? pathname === "/dashboard"
+                item.href === "/borrower/dashboard"
+                  ? pathname === "/borrower/dashboard"
                   : pathname.startsWith(item.href);
 
               const Icon = item.icon;
@@ -135,11 +135,11 @@ export function BorrowerNavbar({ user }: BorrowerNavbarProps) {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem asChild className="cursor-pointer rounded-xl">
-                <Link href="/dashboard">My Applications</Link>
+                <Link href="/borrower/dashboard">My Applications</Link>
               </DropdownMenuItem>
 
               <DropdownMenuItem asChild className="cursor-pointer rounded-xl">
-                <Link href="/dashboard/loans">My Loans</Link>
+                <Link href="/borrower/loans">My Loans</Link>
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -161,8 +161,8 @@ export function BorrowerNavbar({ user }: BorrowerNavbarProps) {
         <div className="mx-auto flex max-w-7xl gap-2 px-4 py-3 sm:px-6">
           {navItems.map((item) => {
             const isActive =
-              item.href === "/dashboard"
-                ? pathname === "/dashboard"
+              item.href === "/borrower/dashboard"
+                ? pathname === "/borrower/dashboard"
                 : pathname.startsWith(item.href);
 
             const Icon = item.icon;

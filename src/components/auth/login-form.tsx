@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 const getRedirectPathByRole = (role: UserRole) => {
   switch (role) {
     case "BORROWER":
-      return "/dashboard/borrower";
+      return "/borrower/dashboard";
     case "ADMIN":
     case "SALES":
     case "SANCTION":
