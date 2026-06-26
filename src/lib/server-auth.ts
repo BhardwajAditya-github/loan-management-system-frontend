@@ -21,11 +21,11 @@ export interface ServerJwtUser {
 }
 
 function getJwtSecret() {
-  const secret = process.env.NEXT_PUBLIC_JWT_SECRET || process.env.JWT_SECRET;
+  const secret = process.env.JWT_SECRET;
 
   if (!secret) {
     throw new Error(
-      "JWT secret not found. Add NEXT_PUBLIC_JWT_SECRET or JWT_SECRET to frontend env.",
+      "Missing credentials!",
     );
   }
 

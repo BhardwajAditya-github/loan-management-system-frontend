@@ -12,8 +12,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const getRedirectPathByRole = (role: UserRole) => {
-  if (role === "BORROWER") return "/borrower/dashboard";
-  return "/employee/dashboard";
+  switch (role) {
+    case "BORROWER":
+      return "/dashboard/borrower";
+    case "ADMIN":
+    case "SALES":
+    case "SANCTION":
+    case "DISBURSEMENT":
+    case "COLLECTION":
+      return "/employee/dashboard";
+    default:
+      return "/borrower/dashboard";
+  }
 };
 
 export function LoginForm() {

@@ -123,9 +123,18 @@ export function BorrowerDashboard() {
     ] as const;
   }, [application, loan]);
 
-  const canUploadSalarySlip = !!application?.brePassed;
+  const canUploadSalarySlip =
+    !!application?.brePassed && application?.status !== "SUBMITTED";
+
   const canSubmitLoanRequest =
-    !!application?.brePassed && !!application?.salarySlipUrl;
+    !!application?.brePassed &&
+    !!application?.salarySlipUrl &&
+    application?.status !== "SUBMITTED";
+
+  const isSubmittedApplication =
+    application?.status === "SUBMITTED" || !!application?.loanNumber;
+
+  const isReadOnly = !!isSubmittedApplication;
 
   const personalDetailsInitialValues = application
     ? {
@@ -140,16 +149,6 @@ export function BorrowerDashboard() {
   return (
     <main className="min-h-screen bg-gradient-page">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Borrower dashboard
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Complete your loan application, upload documents, and track your
-            loan journey from one place.
-          </p>
-        </div>
-
         {isLoading ? (
           <div className="rounded-3xl border bg-white p-8 shadow-card">
             <p className="text-sm text-muted-foreground">
@@ -182,60 +181,126 @@ export function BorrowerDashboard() {
                 </div>
               ) : null}
 
-              <PersonalDetailsForm
-                initialValues={personalDetailsInitialValues}
-                onSuccess={(nextApplication) => {
-                  setApplication(nextApplication);
-                  if (!nextApplication.loanNumber) {
-                    setLoan(null);
-                  }
-                }}
-              />
+              {isReadOnly ? (
+                <div className="space-y-6">
+                  <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
+                    <h3 className="text-lg font-semibold text-blue-900">
+                      Application submitted successfully
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-blue-800">
+                      Your loan application has already been submitted and is
+                      currently under internal review. You can track the status
+                      from the summary panel, but the application can no longer
+                      be edited.
+                    </p>
 
-              {application && !application.brePassed ? (
-                <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
-                  <h3 className="text-lg font-semibold text-red-700">
-                    BRE did not pass
-                  </h3>
-                  <p className="mt-2 text-sm text-red-700">
-                    Your current details did not pass the eligibility rules.
-                    Update your details and try again.
-                  </p>
+                    {loan ? (
+                      <div className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                        Loan #{loan.loanNumber} · {loan.status}
+                      </div>
+                    ) : (
+                      <div className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                        Status · {application?.status}
+                      </div>
+                    )}
+                  </div>
 
-                  {application.breReasons.length > 0 ? (
-                    <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-red-700">
-                      {application.breReasons.map((reason) => (
-                        <li key={reason}>{reason}</li>
-                      ))}
-                    </ul>
-                  ) : null}
+                  <div className="rounded-3xl border bg-white p-6 shadow-card">
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      What happens next
+                    </h3>
+
+                    <div className="mt-4 grid gap-4 md:grid-cols-3">
+                      <div className="rounded-2xl border bg-slate-50 p-4">
+                        <p className="text-sm font-semibold text-slate-900">
+                          1. Review
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          Internal team reviews your submitted application and
+                          loan details.
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border bg-slate-50 p-4">
+                        <p className="text-sm font-semibold text-slate-900">
+                          2. Decision
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          The sanction team will approve or reject the loan
+                          based on internal checks.
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border bg-slate-50 p-4">
+                        <p className="text-sm font-semibold text-slate-900">
+                          3. Disbursement
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          If approved, the loan will move to disbursement and
+                          then repayment tracking.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ) : null}
-
-              <SalarySlipUpload
-                disabled={!canUploadSalarySlip}
-                hasUploaded={!!application?.salarySlipUrl}
-                fileName={application?.salarySlipFileName}
-                onSuccess={(nextApplication) => {
-                  setApplication(nextApplication);
-                }}
-              />
-
-              {canSubmitLoanRequest ? (
-                <LoanRequestForm
-                  onSuccess={({
-                    application: nextApplication,
-                    loan: nextLoan,
-                  }) => {
-                    setApplication(nextApplication);
-                    setLoan(nextLoan);
-                  }}
-                />
               ) : (
-                <div className="rounded-3xl border bg-slate-50 p-5 text-sm text-muted-foreground">
-                  You can submit your loan request after BRE passes and salary
-                  slip is uploaded successfully.
-                </div>
+                <>
+                  <PersonalDetailsForm
+                    initialValues={personalDetailsInitialValues}
+                    onSuccess={(nextApplication) => {
+                      setApplication(nextApplication);
+                      if (!nextApplication.loanNumber) {
+                        setLoan(null);
+                      }
+                    }}
+                  />
+
+                  {application && !application.brePassed ? (
+                    <div className="rounded-3xl border border-red-200 bg-red-50 p-6">
+                      <h3 className="text-lg font-semibold text-red-700">
+                        BRE did not pass
+                      </h3>
+                      <p className="mt-2 text-sm text-red-700">
+                        Your current details did not pass the eligibility rules.
+                        Update your details and try again.
+                      </p>
+
+                      {application.breReasons.length > 0 ? (
+                        <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-red-700">
+                          {application.breReasons.map((reason) => (
+                            <li key={reason}>{reason}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  <SalarySlipUpload
+                    disabled={!canUploadSalarySlip}
+                    hasUploaded={!!application?.salarySlipUrl}
+                    fileName={application?.salarySlipFileName}
+                    onSuccess={(nextApplication) => {
+                      setApplication(nextApplication);
+                    }}
+                  />
+
+                  {canSubmitLoanRequest ? (
+                    <LoanRequestForm
+                      onSuccess={({
+                        application: nextApplication,
+                        loan: nextLoan,
+                      }) => {
+                        setApplication(nextApplication);
+                        setLoan(nextLoan);
+                      }}
+                    />
+                  ) : (
+                    <div className="rounded-3xl border bg-slate-50 p-5 text-sm text-muted-foreground">
+                      You can submit your loan request after BRE passes and
+                      salary slip is uploaded successfully.
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

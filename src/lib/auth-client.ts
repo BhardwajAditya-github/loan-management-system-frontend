@@ -1,3 +1,4 @@
+import { tokenStorage } from "@/lib/api";
 const TOKEN_KEY = "lms_token";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
@@ -16,6 +17,12 @@ export function clearAuthToken() {
     localStorage.removeItem(TOKEN_KEY);
     document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; samesite=lax`;
   }
+}
+
+export async function clearAuthAndLogout() {
+  tokenStorage.remove();
+
+  document.cookie = `${TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 export function getAuthToken() {
